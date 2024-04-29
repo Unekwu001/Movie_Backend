@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://jemmimah-moviefrontend.vercel.app/") // Replace with your React app's URL
+        builder.WithOrigins("https://movie-5ey6vp3sp-unekwu001s-projects.vercel.app/", "https://jemmimah-moviefrontend.vercel.app/") // Replace with your React app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders("Authorization"); // This adds the custom authorization header to response
