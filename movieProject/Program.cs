@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://movie-fe-rose.vercel.app") // Replace with your React app's URL
+        builder.WithOrigins("https://jemmimah-moviefrontend.vercel.app/") // Replace with your React app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders("Authorization"); // This adds the custom authorization header to response
@@ -29,11 +29,9 @@ var app = builder.Build();
 app.UseCors();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
