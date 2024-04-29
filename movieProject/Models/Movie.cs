@@ -1,6 +1,6 @@
-﻿namespace movieProject
+﻿namespace movieProject.Model
 {
-    public class MovieDetails
+    public class Movie
     {
         public string Title { get; set; }
         public string Year { get; set; }

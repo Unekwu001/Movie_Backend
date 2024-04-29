@@ -1,6 +1,8 @@
 ﻿using Data.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using movieProject.Model;
+using movieProject.MovieServices;
 using Newtonsoft.Json;
 
 namespace movieProject.Controllers
@@ -9,27 +11,30 @@ namespace movieProject.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+        private  readonly IMovieService _movieService;
 
-
-        private static List<string> searchHistory = new List<string>();
-        private readonly string apiKey = "f51e7b79"; // Get your API key from http://www.omdbapi.com
+        public MovieController(IMovieService movieService)
+        {
+            _movieService = movieService;
+        }
 
 
         [HttpGet("search/{title}")]
-        public async Task<IActionResult> SearchMovie(string title)
+        public async Task<IActionResult> MovieSearch(string title)
         {
-            // Save search query to history
-            searchHistory.Insert(0, title);
-            if (searchHistory.Count > 5)
-                searchHistory.RemoveAt(5);
-
-            // Call OMDB API
-            using (var client = new HttpClient())
+            try
             {
-                var response = await client.GetStringAsync($"http://www.omdbapi.com/?apikey={apiKey}&t={title}");
-                var result = JsonConvert.DeserializeObject<MovieDetails>(response);
-                return Ok(ApiResponse.Success(result));
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    return BadRequest("Please supply a valid movie name");
+                } 
+                var result = await _movieService.MovieSearchAsync(title);
+                return Ok(JemmimahApiResponse.Success(result));
             }
+            catch(Exception ex) 
+            {
+                return BadRequest("An error occured while fetching your movie.");
+            }                         
         }
 
 
@@ -37,9 +42,21 @@ namespace movieProject.Controllers
 
 
         [HttpGet("searchHistory")]
-        public IActionResult GetSearchHistory()
+        public async Task<IActionResult> GetSearchHistory()
         {
-            return Ok(ApiResponse.Success(searchHistory.Take(5)));
+            try
+            {
+                var search = await _movieService.GetSearchHistoryAsync();
+                if(search == null)
+                {
+                    return NotFound(JemmimahApiResponse.Failed("No recent searches found."));
+                }
+                return Ok(JemmimahApiResponse.Success(search));
+            }
+            catch(Exception ex) 
+            {
+                return BadRequest("Oops, Please Try again later.");
+            }
         }
 
 
